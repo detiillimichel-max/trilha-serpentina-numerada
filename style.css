@@ -1,0 +1,471 @@
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color: transparent; user-select:none; }
+html,body { height:100%; }
+body {
+  font-family:'Nunito',sans-serif;
+  background: radial-gradient(circle at top, #163a6b 0%, #050b1a 75%);
+  color:#fff;
+  min-height:100vh;
+  display:flex; align-items:center; justify-content:center;
+  overflow-x:hidden;
+}
+#app {
+  width:100%; max-width:480px; min-height:100vh;
+  display:flex; flex-direction:column;
+  padding:12px 12px 24px;
+  position:relative;
+}
+h1 {
+  font-family:'Fredoka One',cursive;
+  font-size:1.5rem;
+  text-align:center;
+  color:#ffb84d;
+  text-shadow:0 0 12px rgba(255,184,77,0.5);
+  margin-bottom:8px;
+  letter-spacing:0.5px;
+}
+
+/* HUD */
+.hud {
+  display:flex; justify-content:space-between; align-items:center;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,184,77,0.35);
+  border-radius:14px;
+  padding:8px 12px;
+  margin-bottom:10px;
+  font-weight:800;
+  font-size:0.85rem;
+  gap:6px;
+}
+.hud .lives { display:flex; gap:3px; font-size:1.1rem; }
+.heart { transition: transform 0.2s; }
+.heart.lost { opacity:0.2; transform:scale(0.8); }
+.hud .coins { color:#ffd54f; display:flex; align-items:center; gap:3px;}
+.hud .phase { color:#7ee8fa; }
+
+/* Board */
+.board-card {
+  background: linear-gradient(160deg, rgba(255,255,255,0.07), rgba(255,255,255,0.02));
+  border:1px solid rgba(126,232,250,0.25);
+  border-radius:20px;
+  padding:14px 12px;
+  margin-bottom:10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.05);
+}
+.board-title {
+  font-family:'Fredoka One',cursive;
+  font-size:1.15rem;
+  background: linear-gradient(90deg, #7ee8fa, #00ffa3);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-align:center;
+  margin-bottom:10px;
+  letter-spacing:0.5px;
+}
+.board-wrap {
+  position:relative;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(126,232,250,0.06), transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(0,255,163,0.05), transparent 50%),
+    rgba(5,12,28,0.55);
+  border-radius:16px;
+  padding:8px;
+  border:1px solid rgba(255,255,255,0.06);
+}
+.board {
+  display:grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap:6px;
+  position:relative;
+}
+.board-path {
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+}
+.cell {
+  aspect-ratio:1;
+  border-radius:10px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  font-size:1.05rem;
+  position:relative;
+  z-index:1;
+  font-weight:800;
+  border:1px solid rgba(255,255,255,0.07);
+  background: linear-gradient(160deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 2px 6px rgba(0,0,0,0.25);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.cell .num {
+  font-size:0.5rem;
+  position:absolute;
+  top:3px; left:4px;
+  color:rgba(255,255,255,0.35);
+  font-weight:700;
+  font-family:'Nunito',sans-serif;
+}
+.cell .val {
+  font-size:0.55rem;
+  font-family:'Nunito',sans-serif;
+  font-weight:800;
+  margin-top:1px;
+  letter-spacing:0.3px;
+}
+
+/* Tipos de casa - cores temáticas com leve gradiente */
+.cell.bonus {
+  background: linear-gradient(160deg, rgba(255,213,79,0.28), rgba(255,213,79,0.08));
+  border-color: rgba(255,213,79,0.55);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), 0 0 10px rgba(255,213,79,0.15);
+}
+.cell.bonus .val { color:#ffe082; }
+
+.cell.coin {
+  background: linear-gradient(160deg, rgba(0,255,163,0.26), rgba(0,255,163,0.06));
+  border-color: rgba(0,255,163,0.5);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), 0 0 10px rgba(0,255,163,0.12);
+}
+.cell.coin .val { color:#7dffce; }
+
+.cell.trap {
+  background: linear-gradient(160deg, rgba(255,77,109,0.28), rgba(255,77,109,0.07));
+  border-color: rgba(255,77,109,0.55);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 0 10px rgba(255,77,109,0.15);
+}
+
+.cell.fork {
+  background: linear-gradient(160deg, rgba(126,232,250,0.28), rgba(126,232,250,0.07));
+  border-color: rgba(126,232,250,0.55);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), 0 0 10px rgba(126,232,250,0.18);
+}
+
+.cell.start {
+  background: linear-gradient(160deg, rgba(255,184,77,0.3), rgba(255,184,77,0.08));
+  border-color: rgba(255,184,77,0.6);
+  font-size:1.2rem;
+}
+
+.cell.finish {
+  background: linear-gradient(160deg, rgba(255,184,77,0.4), rgba(255,107,107,0.12));
+  border-color: rgba(255,184,77,0.75);
+  font-size:1.25rem;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 0 16px rgba(255,184,77,0.35);
+}
+
+/* Casa atual do jogador */
+.cell.active-token {
+  border-color:#00e5ff;
+  box-shadow: 0 0 0 2px rgba(0,229,255,0.6), 0 0 18px rgba(0,229,255,0.45), inset 0 1px 0 rgba(255,255,255,0.2);
+  transform: scale(1.1);
+  z-index:2;
+}
+
+/* Próxima casa disponível durante movimento manual */
+.cell.next-step {
+  border-color:#00ffa3;
+  box-shadow: 0 0 0 2px rgba(0,255,163,0.55), 0 0 16px rgba(0,255,163,0.4);
+  animation: pulseNext 1s ease-in-out infinite;
+}
+@keyframes pulseNext {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+}
+
+.token {
+  position:absolute;
+  font-size:1.4rem;
+  transition: left 0.3s cubic-bezier(.34,1.56,.64,1), top 0.3s cubic-bezier(.34,1.56,.64,1);
+  pointer-events:none;
+  z-index:3;
+  filter: drop-shadow(0 2px 6px rgba(0,229,255,0.9));
+  animation: bob 1.4s ease-in-out infinite;
+  touch-action:none;
+}
+.token.draggable {
+  pointer-events:auto;
+  cursor:grab;
+  animation:none;
+  filter: drop-shadow(0 2px 10px rgba(0,255,163,0.95));
+}
+.token.dragging {
+  cursor:grabbing;
+  transition:none;
+  animation:none;
+  z-index:10;
+}
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+/* Legenda do tabuleiro */
+.board-legend {
+  display:flex; flex-wrap:wrap; gap:8px;
+  margin-top:10px;
+  justify-content:center;
+  font-size:0.65rem;
+  color:rgba(255,255,255,0.6);
+}
+.board-legend span {
+  display:flex; align-items:center; gap:3px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:8px;
+  padding:3px 8px;
+}
+
+/* Controls */
+.controls {
+  display:flex; flex-direction:column; gap:10px;
+  margin-bottom:8px;
+}
+.dice-area {
+  display:flex; align-items:center; justify-content:center; gap:14px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,184,77,0.3);
+  border-radius:14px;
+  padding:12px;
+}
+.dice {
+  font-size:2.4rem;
+  width:56px; height:56px;
+  display:flex; align-items:center; justify-content:center;
+  background:rgba(255,255,255,0.08);
+  border-radius:12px;
+  transition: transform 0.15s;
+}
+.dice.rolling { animation: roll 0.5s linear; }
+@keyframes roll {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.roll-btn {
+  font-family:'Fredoka One',cursive;
+  font-size:1.05rem;
+  padding:14px 28px;
+  border:none; border-radius:14px;
+  background:linear-gradient(135deg,#00e5ff,#00ffa3);
+  color:#05101f;
+  font-weight:900;
+  cursor:pointer;
+  box-shadow:0 6px 18px rgba(0,229,255,0.35);
+  transition:transform 0.12s;
+}
+.roll-btn:active { transform:scale(0.95); }
+.roll-btn:disabled {
+  background:rgba(255,255,255,0.1);
+  color:rgba(255,255,255,0.3);
+  box-shadow:none;
+  cursor:not-allowed;
+}
+
+.move-area {
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(0,255,163,0.35);
+  border-radius:14px;
+  padding:12px 14px;
+}
+.move-info {
+  font-weight:800;
+  font-size:0.9rem;
+  color:#00ffa3;
+}
+.move-hint {
+  font-size:0.78rem;
+  color:rgba(255,255,255,0.65);
+  font-weight:700;
+}
+
+.path-choice {
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(126,232,250,0.3);
+  border-radius:14px;
+  padding:12px;
+}
+.path-label {
+  font-weight:800;
+  font-size:0.85rem;
+  color:#7ee8fa;
+  margin-bottom:8px;
+  text-align:center;
+}
+.path-buttons {
+  display:flex; gap:8px;
+}
+.path-btn {
+  flex:1;
+  font-family:'Fredoka One',cursive;
+  font-size:0.85rem;
+  padding:12px 6px;
+  border:none; border-radius:12px;
+  background:linear-gradient(135deg,#ffb84d,#ff7676);
+  color:#1a0d00;
+  font-weight:900;
+  cursor:pointer;
+  line-height:1.5;
+  transition:transform 0.12s;
+}
+.path-btn span {
+  display:block;
+  font-family:'Nunito',sans-serif;
+  font-size:0.65rem;
+  font-weight:700;
+  opacity:0.75;
+}
+.path-btn:active { transform:scale(0.94); }
+.path-btn#pathLong {
+  background:linear-gradient(135deg,#00e5ff,#00ffa3);
+}
+
+.event-log {
+  text-align:center;
+  font-size:0.82rem;
+  font-weight:700;
+  color:rgba(255,255,255,0.75);
+  background:rgba(255,255,255,0.04);
+  border-radius:10px;
+  padding:8px 10px;
+  margin-bottom:10px;
+  min-height:34px;
+  display:flex; align-items:center; justify-content:center;
+}
+
+/* Shop */
+.shop {
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,184,77,0.3);
+  border-radius:16px;
+  padding:12px;
+  margin-bottom:10px;
+}
+.shop h3 {
+  font-family:'Fredoka One',cursive;
+  font-size:1.05rem;
+  color:#ffb84d;
+  margin-bottom:8px;
+  display:flex; align-items:center; gap:6px;
+  flex-wrap:wrap;
+}
+.shop h3 .hint {
+  font-size:0.7rem;color:rgba(255,255,255,0.5);font-weight:400;
+}
+.shop-list {
+  display:flex; flex-direction:column; gap:8px;
+}
+.shop-item {
+  display:flex; align-items:center; gap:10px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.12);
+  border-radius:12px;
+  padding:8px 12px;
+}
+.shop-item .icon-box {
+  width:38px; height:38px;
+  flex-shrink:0;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.15);
+  border-radius:9px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.3rem;
+}
+.shop-item .info { flex:1; min-width:0; }
+.shop-item .pname {
+  font-weight:800;
+  font-size:0.82rem;
+  line-height:1.2;
+}
+.shop-item .pdesc {
+  font-size:0.7rem;
+  color:rgba(255,255,255,0.55);
+  margin-top:1px;
+}
+.shop-item .pprice {
+  font-size:0.74rem;
+  color:#ffd54f;
+  font-weight:700;
+  margin-top:2px;
+}
+.buy-btn {
+  font-family:'Fredoka One',cursive;
+  font-size:0.85rem;
+  padding:8px 14px;
+  border:none; border-radius:10px;
+  background:linear-gradient(135deg,#00e5ff,#00ffa3);
+  color:#05101f;
+  font-weight:900;
+  cursor:pointer;
+  flex-shrink:0;
+  transition:transform 0.12s;
+}
+.buy-btn:active { transform:scale(0.92); }
+.buy-btn:disabled {
+  background:rgba(255,255,255,0.12);
+  color:rgba(255,255,255,0.35);
+  cursor:not-allowed;
+}
+
+.finish-area { display:flex; }
+.finish-btn {
+  width:100%;
+  font-family:'Fredoka One',cursive;
+  font-size:1.05rem;
+  padding:14px;
+  border:none; border-radius:14px;
+  background:linear-gradient(135deg,#00e5ff,#00ffa3);
+  color:#05101f;
+  font-weight:900;
+  cursor:pointer;
+  box-shadow:0 6px 18px rgba(0,229,255,0.35);
+  transition:transform 0.12s;
+}
+.finish-btn:active { transform:scale(0.96); }
+
+/* Overlays */
+.overlay {
+  position:fixed; inset:0;
+  background:rgba(5,8,20,0.94);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  text-align:center; padding:30px;
+  backdrop-filter: blur(4px);
+  z-index:50;
+}
+.overlay h2 {
+  font-family:'Fredoka One',cursive;
+  font-size:1.9rem;
+  margin-bottom:12px;
+  color:#ffb84d;
+  text-shadow:0 0 14px rgba(255,184,77,0.7);
+}
+.overlay p { margin:6px 0; font-size:1rem; max-width:340px; }
+.overlay .btn {
+  margin-top:22px;
+  padding:14px 36px;
+  font-size:1.05rem;
+  font-weight:900;
+  font-family:'Fredoka One',cursive;
+  color:#05101f;
+  background:linear-gradient(135deg,#00e5ff,#00ffa3);
+  border:none; border-radius:14px;
+  cursor:pointer;
+  box-shadow:0 6px 18px rgba(0,229,255,0.4);
+  transition:transform 0.15s;
+}
+.overlay .btn:active { transform:scale(0.95); }
+.hidden { display:none !important; }
+
+.flash-overlay {
+  position:fixed; inset:0;
+  pointer-events:none;
+  z-index:40;
+  animation:flashFade 0.5s ease-out forwards;
+}
+.flash-overlay.green { background:rgba(0,255,163,0.16); }
+.flash-overlay.red { background:rgba(255,77,109,0.2); }
+.flash-overlay.gold { background:rgba(255,213,79,0.2); }
+@keyframes flashFade { from{opacity:1} to{opacity:0} }
+
+::-webkit-scrollbar { width:6px; }
+::-webkit-scrollbar-thumb { background:rgba(255,184,77,0.4); border-radius:4px; }
+    
