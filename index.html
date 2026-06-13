@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Trilha da Sorte</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0d2547">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+  <h1>🎲 Trilha da Sorte</h1>
+
+  <div class="hud">
+    <div class="phase">Fase <span id="phaseNum">1</span>/20</div>
+    <div>⭐ <span id="scoreLabel">0</span></div>
+    <div class="coins">🪙 <span id="coinsLabel">0</span></div>
+    <div class="lives" id="livesBox">
+      <span class="heart">❤️</span>
+      <span class="heart">❤️</span>
+      <span class="heart">❤️</span>
+    </div>
+  </div>
+
+  <div class="board-card">
+    <div class="board-title" id="boardTitle">Tabuleiro 1</div>
+    <div class="board-wrap">
+      <div class="board" id="board"></div>
+      <div class="token" id="token">🚀</div>
+    </div>
+    <div class="board-legend">
+      <span>🚩 Início</span>
+      <span>⭐ Bônus</span>
+      <span>🪙 Moeda</span>
+      <span>⚠️ Armadilha</span>
+      <span>🔀 Bifurcação</span>
+      <span>🏆 Fim</span>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="dice-area">
+      <div class="dice" id="dice">🎲</div>
+      <button class="roll-btn" id="rollBtn">Rolar Dado</button>
+    </div>
+    <div class="move-area hidden" id="moveArea">
+      <div class="move-info">Passos restantes: <span id="stepsLeft">0</span></div>
+      <div class="move-hint">👉 Arraste o 🚀 até a próxima casa marcada</div>
+    </div>
+    <div class="path-choice hidden" id="pathChoice">
+      <div class="path-label">Escolha o caminho:</div>
+      <div class="path-buttons">
+        <button class="path-btn" id="pathShort">
+          ⚡ Atalho<br><span>menos casas, menos pontos</span>
+        </button>
+        <button class="path-btn" id="pathLong">
+          🛡️ Rota Segura<br><span>mais casas, mais pontos</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="event-log" id="eventLog">Role o dado para começar a se mover!</div>
+
+  <!-- Loja -->
+  <div class="shop">
+    <h3>🛒 Loja de Power-ups <span class="hint">(use seus pontos ⭐)</span></h3>
+    <div class="shop-list" id="shopList"></div>
+  </div>
+
+  <div class="finish-area">
+    <button class="finish-btn hidden" id="finishBtn">🏁 Concluir Fase</button>
+  </div>
+
+  <!-- Start screen -->
+  <div class="overlay" id="startScreen">
+    <h2>🎲 Trilha da Sorte</h2>
+    <p>20 fases, 20 tabuleiros diferentes! Role o dado e avance casa por casa.</p>
+    <p>Cada número do dado = 1 casa. Em certas casas você escolhe entre um <b>Atalho</b> (menos casas, menos pontos) ou a <b>Rota Segura</b> (mais casas, mais pontos).</p>
+    <p>❤️ Você tem 3 vidas. Casas de armadilha custam 1 vida. Use ⭐ pontos na loja para comprar ajudas!</p>
+    <button class="btn" id="startBtn">Jogar!</button>
+  </div>
+
+  <!-- Game Over -->
+  <div class="overlay hidden" id="gameOverScreen">
+    <h2>💔 Fim de Jogo</h2>
+    <p>Você perdeu todas as vidas na fase <span id="goPhase">1</span>.</p>
+    <p>Pontuação final: ⭐ <span id="goScore">0</span></p>
+    <button class="btn" id="restartBtn">Tentar Novamente</button>
+  </div>
+
+  <!-- Phase complete -->
+  <div class="overlay hidden" id="winScreen">
+    <h2>🎉 Fase Completa! 🎉</h2>
+    <p id="winText">Você chegou ao fim do tabuleiro!</p>
+    <p>Pontos ganhos: ⭐ <span id="winScore">0</span></p>
+    <button class="btn" id="continueBtn">Próximo Tabuleiro</button>
+  </div>
+
+  <!-- All done -->
+  <div class="overlay hidden" id="allDoneScreen">
+    <h2>🏆 Mestre da Trilha! 🏆</h2>
+    <p>Você completou os 20 tabuleiros!</p>
+    <p>Pontuação final: ⭐ <span id="allDoneScore">0</span></p>
+    <p>Os tabuleiros vão mudar de novo e o desafio recomeça do 1!</p>
+    <button class="btn" id="loopBtn">Recomeçar com novos tabuleiros</button>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
+
